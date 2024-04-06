@@ -11,7 +11,8 @@ async def index():
 
 @app.get("/getIncidents")
 async def get_incidents():
-   # get all incidents from the incidents table
+  response = supabase.table('incidents').select('*', count='exact').execute()
+  return response
 
 if __name__ == "__main__":
     uvicorn.run("server:app", port=8000, reload=True)
