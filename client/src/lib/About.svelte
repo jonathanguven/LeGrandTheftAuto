@@ -1,6 +1,6 @@
 <script>
   let project = {
-    name: "LeGrandTheftAuto",
+    name: "Biip",
     url: "https://github.com/jonathanguven/LeGrandTheftAuto",
     data_url: "https://data.sfgov.org/Public-Safety/Police-Department-Incident-Reports-2018-to-Present/wg3w-h783/about_data"
   };
@@ -34,7 +34,7 @@
       </p>
       <p class="pb-4">
         This project was built using Vite+Svelte on the frontend, and Python+FastAPI on the backend.
-        We used MapBoxGl to display the map and crime incident markers, and got our data from the San Francisco
+        We used MapBoxGL to display the map and crime incident markers, and got our data from the San Francisco
         Police Department's publicly available data report shown <span><a href={project.data_url} class="underline">here</a></span>.
       </p>
     </div>
