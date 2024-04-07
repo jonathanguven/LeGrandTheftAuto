@@ -1,7 +1,6 @@
 from supabase import Client, create_client
 from dotenv import load_dotenv
 import os
-from config import url, api
 
 load_dotenv()
 
