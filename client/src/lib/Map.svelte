@@ -4,9 +4,13 @@
   import { onMount, onDestroy } from "svelte";
   import { getGeoJson } from '../apiFunctions/getGeoJson';
   import { calculateRecency } from './utils/time.js';
+
   let data;
   let dark = true;
+  let timeFrame = '';
   // let layer = 'incidents';
+
+  $: timeFrame, updateTime();
 
   $: theme = dark ? 'dark' : 'light';
   $: color = dark ? '#87CEEB' : '#B42222';
@@ -55,14 +59,6 @@
       });
     }
 
-  
-    data.features.forEach(feature => {
-      const dateString = feature.properties.date; // Extract the date string
-      feature.properties.recency = calculateRecency(dateString);
-      // console.log(`Feature ID: ${feature.properties.id}, Recency: ${feature.properties.recency} days`);
-    });
-  
-    
     if (!map.getLayer('heatIncidents')) {
       map.addLayer({
         id: 'heatIncidents',
@@ -213,6 +209,26 @@
       map.setStyle(style);    }
   }
 
+  async function updateTime() {
+    let numWeeks = 1;
+    if (timeFrame) {
+      if (timeFrame === '1 Week') numWeeks = 1;
+      if (timeFrame === '1 Month') numWeeks = 4;
+      if (timeFrame === '3 Months') numWeeks = 12;
+      if (timeFrame === '1 Year') numWeeks = 52;
+      data = await getGeoJson(numWeeks);
+    } else {
+      data = await getGeoJson(1);
+    }
+    data.features.forEach(feature => {
+      const dateString = feature.properties.date; 
+      feature.properties.recency = calculateRecency(dateString);
+    });
+    map.getSource('incidents').setData(data);
+    map.getSource('heatSource').setData(data);
+    
+  }
+
   onMount(async () => {
     data = await getGeoJson(1);
 
@@ -260,14 +276,25 @@
   <!-- dark mode toggle -->
   <input type="checkbox" class="toggle mode" bind:checked={dark}/>
   <!-- layer input -->
-  <div class="buttons">
-    <button class="btn mr-4" on:click={() => updateVisibility('incidents')}>Points</button>
-    <button class="btn mr-4" on:click={() => updateVisibility('heatIncidents')}>HeatMap</button>
+  <div class="flex justify-between">
+    <div class="buttons">
+      <button class="btn mr-4" on:click={() => updateVisibility('incidents')}>Points</button>
+      <button class="btn mr-4" on:click={() => updateVisibility('heatIncidents')}>HeatMap</button>
+    </div>
+    <!-- time frame dropdown -->
+    <select class="select select-primary w-full max-w-xs m-4 z-10" bind:value={timeFrame}>
+      <option disabled selected value="">Time Frame</option>
+      <option>1 Week</option>
+      <option>1 Month</option>
+      <option>3 Months</option>
+      <option>1 Year</option>
+    </select>
   </div>
   <!-- map container -->
   <div class="w-full h-full absolute -mt-20">
     <div class="w-full h-full" bind:this={mapContainer} />
   </div>
+  <p class="absolute z-10 text-white"> Time Frame: {timeFrame}</p>
 </main>
 
 <style>
