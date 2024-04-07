@@ -74,8 +74,9 @@
             stops: [
               [0,3],
               [10, 1],
-              [20, 0.3],
-              [30, 0]
+              [20, 0.5],
+              [30, 0.1],
+              [45, 0.05]
             ]
           },
           //increase intensity as zoom level increases
