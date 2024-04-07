@@ -20,12 +20,12 @@ async def index():
   return "Welcome to LeGrandTheftAuto"
 
 @app.get("/getIncidents")
-async def get_incidents():
-  return get_last_month_incidents()
+async def get_incidents(weeks_back: int = 4):
+  return get_incidents_by_weeks(weeks_back)
 
 @app.get("/geojson")
-async def get_geojson():
-  rows = get_last_month_incidents()
+async def get_geojson(weeks_back: int = 4):
+  rows = get_incidents_by_weeks(weeks_back)
   features = []
   for row in rows:
     try:
@@ -55,20 +55,23 @@ async def get_geojson():
   }
   return geojson
 
-def get_last_month_incidents():
-  columns = 'Incident Date, Incident Time, Latitude, Longitude, Incident ID, Incident Description, Analysis Neighborhood, Incident Subcategory, Incident Datetime'
+def get_incidents_by_weeks(weeks_back: int = 4):
+    columns = 'Incident Date, Incident Time, Latitude, Longitude, Incident ID, Incident Description, Analysis Neighborhood, Incident Subcategory, Incident Datetime'
 
-  num_months_back = datetime.now() - relativedelta(months=3)
-  
-  formatted_date = num_months_back.strftime('%Y/%m/%d')
-  formatted_end_date = datetime.now().strftime('%Y/%m/%d')
+    # Calculate start date by subtracting weeks
+    start_date = datetime.now() - relativedelta(weeks=weeks_back)
 
-  data, count = supabase.table('incidents')\
+    # Format dates
+    formatted_start_date = start_date.strftime('%Y/%m/%d')
+    formatted_end_date = datetime.now().strftime('%Y/%m/%d')
+
+    # Fetch data
+    data, count = supabase.table('incidents')\
                         .select(columns)\
-                        .gte('Incident Date', formatted_date)\
+                        .gte('Incident Date', formatted_start_date)\
                         .lte('Incident Date', formatted_end_date)\
                         .execute()
-  return data[1]
+    return data[1]
 
 if __name__ == "__main__":
     uvicorn.run("server:app", port=8000, reload=True)
