@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn 
 from db.supabase import create_supabase_client
 from datetime import datetime, timedelta
-from dateutil import relativedelta
+from dateutil.relativedelta import relativedelta
 
 app = FastAPI()
 app.add_middleware(
