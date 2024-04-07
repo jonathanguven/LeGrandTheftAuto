@@ -156,7 +156,7 @@
   function updateVisibility(layer) {
     map.setLayoutProperty('incidents', 'visibility', 'none');
     map.setLayoutProperty('heatIncidents', 'visibility', 'none');
-    map.setLayoutProperty('heatIncidentsButtons', 'visibility', 'none');
+    map.setLayoutProperty('heatIncidentsButtons', 'visibility', layer === "heatIncidents" ? 'visible' : 'none');
     map.setLayoutProperty(layer, 'visibility', 'visible');
     console.log(layer);
     console.log(map.getLayoutProperty(layer, 'visibility'));
