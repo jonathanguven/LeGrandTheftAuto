@@ -3,7 +3,7 @@
   import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
   import { onMount, onDestroy } from "svelte";
   import { getGeoJson } from '../apiFunctions/getGeoJson';
-
+  import { calculateRecency } from './utils/time.js';
   let data;
 
   let dark = true;
@@ -57,6 +57,12 @@
       type: 'geojson',
       data: data
     });
+    data.features.forEach(feature => {
+      const dateString = feature.properties.date; // Extract the date string
+      feature.properties.recency = calculateRecency(dateString);
+      // console.log(`Feature ID: ${feature.properties.id}, Recency: ${feature.properties.recency} days`);
+    });
+
     
     map.addLayer({
       id: 'heatIncidents',
@@ -66,9 +72,12 @@
       paint: {
         'heatmap-weight': {
           type: 'exponential',
+          property: 'recency',
           stops: [
-            [1,0.2],
-            [62, 1]
+            [0,3],
+            [10, 1],
+            [20, 0.3],
+            [30, 0]
           ]
         },
         //increase intensity as zoom level increases
