@@ -25,8 +25,7 @@ async def get_incidents():
 
 @app.get("/geojson")
 async def get_geojson():
-  data = get_last_month_incidents()
-  rows = data[1]
+  rows = get_last_month_incidents()
   features = []
   for row in rows:
     try:
@@ -58,7 +57,7 @@ async def get_geojson():
 
 def get_last_month_incidents():
   # Specify the columns you want to fetch
-  columns = 'Incident Date, Incident Time, Latitude, Longitude'
+  columns = 'Incident Date, Incident Time, Latitude, Longitude, Incident ID, Incident Description, Analysis Neighborhood, Incident Subcategory, Incident Datetime'
 
   # Calculate the date one month back from today
   one_month_back = datetime.now() - relativedelta(months=1)
