@@ -7,7 +7,9 @@
   let data;
 
   let dark = true;
+
   $: theme = dark ? 'dark' : 'light';
+  $: color = dark ? '#87CEEB' : '#B42222';
   $: style = `mapbox://styles/mapbox/${theme}-v11`;
 
   $: {
@@ -30,9 +32,10 @@
     lat = map.getCenter().lat;
   }
 
+
   onMount(async () => {
     data = await getGeoJson();
-    console.log(data);
+
     const initialState = { lng: lng, lat: lat, zoom: zoom };
 
     map = new mapboxGl.Map({
@@ -41,6 +44,12 @@
       style,
       center: [initialState.lng, initialState.lat],
       zoom: initialState.zoom,
+    });
+  
+    map.on('load', addDataLayer);
+  
+    map.on('styledata', async () => {
+      await addDataLayer(); 
     });
 
     map.on('load', () => {
@@ -154,12 +163,49 @@
           .setHTML(`<strong>incident:</strong> ${event.features[0].properties.description} <br> <strong>date of incident: </strong>${event.features[0].properties.date}`)
           .addTo(map);
       });
+      
+  async function addDataLayer() {
+    if (!map.getSource('incidents')) {
+      if (!data) data = await getGeoJson();
+      map.addSource('incidents', {
+        type: 'geojson',
+        data: data
+      });
+
+      map.addLayer({
+        id: 'incidents',
+        type: 'circle',
+        source: 'incidents',
+        paint: {
+          'circle-radius': 3,
+          'circle-color': `${color}`
+        }
+      });
+    }
+  }
+
+  onMount(async () => {
+    data = await getGeoJson();
+
+    const initialState = { lng: lng, lat: lat, zoom: zoom };
+
+    map = new mapboxGl.Map({
+      container: mapContainer,
+      accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
+      style,
+      center: [initialState.lng, initialState.lat],
+      zoom: initialState.zoom,
+    });
+
+    map.on('load', addDataLayer);
+
+    map.on('styledata', async () => {
+      await addDataLayer(); 
     });
 
     map.on('move', () => {
       updateData();
     });
-
   });
 
   onDestroy(() => {
@@ -175,7 +221,7 @@
 <div class="sidebar">
   Longitude: {lng.toFixed(4)} | Latitude: {lat.toFixed(4)} | Zoom: {zoom.toFixed(2)}
 </div>
-<!-- <input type="checkbox" class="toggle mode" bind:checked={dark}/> -->
+<input type="checkbox" class="toggle mode" bind:checked={dark}/>
 <div class="w-full h-full absolute">
   <div class="w-full h-full" bind:this={mapContainer} />
 </div>
