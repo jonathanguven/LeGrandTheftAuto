@@ -1,5 +1,5 @@
 <script>
-  import { Map } from 'mapbox-gl';
+  import mapboxGl, { Map } from 'mapbox-gl';
   import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
 
   import { onMount, onDestroy } from "svelte";
@@ -30,7 +30,6 @@
 
   onMount(() => {
     const initialState = { lng: lng, lat: lat, zoom: zoom };
-
     map = new Map({
       container: mapContainer,
       accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
@@ -38,6 +37,7 @@
       center: [initialState.lng, initialState.lat],
       zoom: initialState.zoom,
     });
+    const marker = new mapboxGl.Marker().setLngLat([initialState.lng, initialState.lat]).addTo(map);
 
     map.on('move', () => {
       updateData();
