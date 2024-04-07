@@ -58,7 +58,7 @@ async def get_geojson():
 def get_last_month_incidents():
   columns = 'Incident Date, Incident Time, Latitude, Longitude, Incident ID, Incident Description, Analysis Neighborhood, Incident Subcategory, Incident Datetime'
 
-  num_months_back = datetime.now() - relativedelta(months=2)
+  num_months_back = datetime.now() - relativedelta(months=3)
   
   formatted_date = num_months_back.strftime('%Y/%m/%d')
   formatted_end_date = datetime.now().strftime('%Y/%m/%d')
