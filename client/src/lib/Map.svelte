@@ -163,7 +163,7 @@
     });
 
     // When the mouse moves over the 'incidents2' layer, show the popup.
-  map.on('mousemove', 'incidents2', (event) => {
+  map.on('mousemove', 'heatIncidentsButtons', (event) => {
     // Check if there is already a popup on the map and if not, create a new one.
     if (!map.getCanvas().style.cursor) {
       map.getCanvas().style.cursor = 'pointer'; // Change the cursor to a pointer
@@ -188,7 +188,7 @@
   });
 
   // When the mouse leaves the 'incidents2' layer, remove the popup and reset cursor style.
-  map.on('mouseleave', 'incidents2', () => {
+  map.on('mouseleave', 'heatIncidentsButtons', () => {
     map.getCanvas().style.cursor = ''; // Reset cursor style
     // Remove the popup
     const popups = document.getElementsByClassName('mapboxgl-popup');
@@ -235,7 +235,7 @@
       await addHeatMapLayer();
     });
 
-    map.on('click', 'heatIncidents', (event) => {
+    map.on('click', 'heatIncidentsButtons', (event) => {
       new mapboxGl.Popup()
         .setLngLat(event.features[0].geometry.coordinates)
         .setHTML(`<strong>incident:</strong> ${event.features[0].properties.description} <br> <strong>date of incident: </strong>${event.features[0].properties.date}`)
