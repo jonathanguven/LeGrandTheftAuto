@@ -50,7 +50,7 @@ async def get_geojson():
     except (TypeError, ValueError):
       continue
   geojson = {
-    "type": "FeatureCollection",
+    "type": "GeoJSON",
     "features": features
   }
   return geojson
