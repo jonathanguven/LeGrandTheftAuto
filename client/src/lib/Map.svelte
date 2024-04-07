@@ -7,7 +7,9 @@
   let data;
 
   let dark = true;
+
   $: theme = dark ? 'dark' : 'light';
+  $: color = dark ? '#87CEEB' : '#B42222';
   $: style = `mapbox://styles/mapbox/${theme}-v11`;
 
   $: {
@@ -44,7 +46,7 @@
         source: 'incidents',
         paint: {
           'circle-radius': 3,
-          'circle-color': '#B42222'
+          'circle-color': `${color}`
         }
       });
     }
