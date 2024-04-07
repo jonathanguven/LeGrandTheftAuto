@@ -45,7 +45,7 @@
         type: 'circle',
         source: 'incidents',
         paint: {
-          'circle-radius': 3,
+          'circle-radius': 6,
           'circle-color': `${color}`
         }
       });
@@ -53,15 +53,15 @@
   }
 
   async function addHeatMapLayer() {
-    map.addSource('incidents', {
+    map.addSource('heatSource', {
       type: 'geojson',
       data: data
     });
     
     map.addLayer({
-      id: 'incidents',
+      id: 'heatIncidents',
       type: 'heatmap',
-      source: 'incidents',
+      source: 'heatSource',
       maxzoom: 15,
       paint: {
         'heatmap-weight': {
@@ -173,20 +173,21 @@
       center: [initialState.lng, initialState.lat],
       zoom: initialState.zoom,
     });
-  
+    
+    // plot layer
     map.on('load', addDataLayer);
     map.on('styledata', async () => {
       await addDataLayer(); 
     });
-
-    map.on('move', () => {
-      updateData();
-    });
-
-    // layer 2
+    
+    // heat layer
     map.on('load', addHeatMapLayer());
     map.on('styledata', async () => {
       await addHeatMapLayer();
+    });
+    
+    map.on('move', () => {
+      updateData();
     });
   });
 
