@@ -1,5 +1,5 @@
 <script>
-  import mapboxGl, { Map } from 'mapbox-gl';
+  import mapboxGl from 'mapbox-gl';
   import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
   import { onMount, onDestroy } from "svelte";
   import { getGeoJson } from '../apiFunctions/getGeoJson';
@@ -55,7 +55,7 @@
 
     const initialState = { lng: lng, lat: lat, zoom: zoom };
 
-    map = new Map({
+    map = new mapboxGl.Map({
       container: mapContainer,
       accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
       style,
