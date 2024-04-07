@@ -1,8 +1,10 @@
 <script>
   import mapboxGl, { Map } from 'mapbox-gl';
   import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
-
   import { onMount, onDestroy } from "svelte";
+  import { getGeoJson } from '../apiFunctions/getGeoJson';
+
+  let data;
 
   let dark = true;
   $: theme = dark ? 'dark' : 'light';
@@ -28,8 +30,11 @@
     lat = map.getCenter().lat;
   }
 
-  onMount(() => {
+  onMount(async () => {
+    data = await getGeoJson();
+    console.log(data);
     const initialState = { lng: lng, lat: lat, zoom: zoom };
+
     map = new Map({
       container: mapContainer,
       accessToken: import.meta.env.VITE_MAPBOX_TOKEN,
@@ -37,8 +42,23 @@
       center: [initialState.lng, initialState.lat],
       zoom: initialState.zoom,
     });
-    const marker = new mapboxGl.Marker().setLngLat([initialState.lng, initialState.lat]).addTo(map);
 
+    map.on('load', () => {
+      map.addSource('incidents', {
+        type: 'geojson',
+        data: data
+      });
+
+      map.addLayer({
+        id: 'incidents',
+        type: 'circle',
+        source: 'incidents',
+        paint: {
+          'circle-radius': 3,
+          'circle-color': '#B42222'
+        }
+      });
+    })
     map.on('move', () => {
       updateData();
     });
@@ -58,7 +78,7 @@
 <div class="sidebar">
   Longitude: {lng.toFixed(4)} | Latitude: {lat.toFixed(4)} | Zoom: {zoom.toFixed(2)}
 </div>
-<input type="checkbox" class="toggle mode" bind:checked={dark}/>
+<!-- <input type="checkbox" class="toggle mode" bind:checked={dark}/> -->
 <div class="w-full h-full absolute">
   <div class="w-full h-full" bind:this={mapContainer} />
 </div>

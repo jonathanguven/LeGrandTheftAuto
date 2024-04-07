@@ -19,8 +19,41 @@ async def index():
 
 @app.get("/getIncidents")
 async def get_incidents():
-  response = supabase.table('incidents').select('*', count='exact').execute()
-  return response
+  data, count = supabase.table('incidents').select('*', count='exact').execute()
+  return data[1]
+
+@app.get("/geojson")
+async def get_geojson():
+  data, count = supabase.table('incidents').select('*').execute()
+  rows = data[1]
+  features = []
+  for row in rows:
+    try:
+      lat = float(row['Latitude'])
+      lon = float(row['Longitude'])
+      feature = {
+        "type": "Feature",
+        "geometry": {
+          "type": "Point",
+          "coordinates": [lon, lat]
+        },
+        "properties": {
+          "id": row['Incident ID'],
+          "neighborhood": row['Analysis Neighborhood'],
+          "category": row['Incident Subcategory'],
+          "date": row['Incident Date'],
+          "time": row['Incident Datetime'],
+          "description": row['Incident Description'],
+        }
+      }
+      features.append(feature)
+    except (TypeError, ValueError):
+      continue
+  geojson = {
+    "type": "FeatureCollection",
+    "features": features
+  }
+  return geojson
 
 if __name__ == "__main__":
     uvicorn.run("server:app", port=8000, reload=True)
