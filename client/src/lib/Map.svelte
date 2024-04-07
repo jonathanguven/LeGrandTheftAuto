@@ -70,9 +70,12 @@
         paint: {
           'heatmap-weight': {
             type: 'exponential',
+            property: 'recency',
             stops: [
-              [1,0.2],
-              [62, 1]
+              [0,3],
+              [10, 1],
+              [20, 0.3],
+              [30, 0]
             ]
           },
           //increase intensity as zoom level increases
@@ -174,7 +177,7 @@
   }
 
   onMount(async () => {
-    data = await getGeoJson();
+    data = await getGeoJson(1);
 
     const initialState = { lng: lng, lat: lat, zoom: zoom };
 
