@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
+    "lucide-svelte": "^0.365.0",
     "mapbox-gl": "^3.2.0"
   }
 }

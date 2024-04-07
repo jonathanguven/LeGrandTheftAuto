@@ -1,4 +1,5 @@
 <script>
+  import { Info } from 'lucide-svelte';
   import mapboxGl from 'mapbox-gl';
   import "../../node_modules/mapbox-gl/dist/mapbox-gl.css";
   import { onMount, onDestroy } from "svelte";
@@ -9,6 +10,7 @@
   let dark = true;
   let timeFrame = '';
   let layer = 'incidents';
+  let showModal = false;
 
   $: timeFrame, updateTime();
 
@@ -277,18 +279,38 @@
   <input type="checkbox" class="toggle mode" bind:checked={dark}/>
   <!-- layer input -->
   <div class="flex justify-between">
-    <div class="buttons">
-      <button class="btn mr-4" on:click={() => layer="incidents"}>Points</button>
-      <button class="btn mr-4" on:click={() => layer="heatIncidents"}>HeatMap</button>
+    <div class="buttons w-56">
+      <button class="btn mr-4" on:click={() => layer="incidents"}>Point</button>
+      <button class="btn mr-4" on:click={() => layer="heatIncidents"}>Heat</button>
     </div>
     <!-- time frame dropdown -->
-    <select class="select select-primary w-full max-w-xs m-4 z-10" bind:value={timeFrame}>
+    <select class="select select-primary max-w-xs m-4 z-10" bind:value={timeFrame}>
       <option disabled selected value="">Time Frame (Default 1 Week)</option>
       <option>1 Week</option>
       <option>1 Month</option>
       <option>3 Months</option>
       <option>6 Months</option>
     </select> 
+    <!-- Neighborhood Safety -->
+    <div class="z-10 w-56 flex justify-end">
+      <button class="btn btn-circle m-4" on:click={()=>{showModal=!showModal}}>
+        <Info />
+      </button>
+      {#if showModal}
+        <dialog id="my_modal_1" class="modal">
+          <div class="modal-box">
+            <h3 class="font-bold text-lg">Hello!</h3>
+            <p class="py-4">Press ESC key or click the button below to close</p>
+            <div class="modal-action">
+              <form method="dialog">
+                <!-- if there is a button in form, it will close the modal -->
+                <button class="btn">Close</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
+      {/if}
+    </div>
   </div>
   <!-- map container -->
   <div class="w-full h-full absolute -mt-20">
