@@ -4,7 +4,7 @@ import os
 
 load_dotenv()
 
-api_url: str = os.environ['SUPABASE_URL']
+url: str = os.environ['SUPABASE_URL']
 key: str = os.environ['SUPABASE_KEY']
 
 def create_supabase_client():
