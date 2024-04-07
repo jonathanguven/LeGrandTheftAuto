@@ -54,12 +54,14 @@
         data: data
       });
     }
+
   
     data.features.forEach(feature => {
       const dateString = feature.properties.date; // Extract the date string
       feature.properties.recency = calculateRecency(dateString);
       // console.log(`Feature ID: ${feature.properties.id}, Recency: ${feature.properties.recency} days`);
     });
+  
     
     if (!map.getLayer('heatIncidents')) {
       map.addLayer({
@@ -158,10 +160,45 @@
             ]
           }
         }
-      });
+    });
+
+    // When the mouse moves over the 'incidents2' layer, show the popup.
+  map.on('mousemove', 'incidents2', (event) => {
+    // Check if there is already a popup on the map and if not, create a new one.
+    if (!map.getCanvas().style.cursor) {
+      map.getCanvas().style.cursor = 'pointer'; // Change the cursor to a pointer
+
+      const coordinates = event.features[0].geometry.coordinates.slice();
+      const description = event.features[0].properties.description;
+      const date = event.features[0].properties.date;
+
+      // Ensure that if the map is zoomed out such that multiple
+      // copies of the feature are visible, the popup appears over the copy
+      // being pointed to.
+      while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
+        coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
+      }
+
+      // Create a popup and add it to the map.
+      new mapboxGl.Popup()
+        .setLngLat(coordinates)
+        .setHTML(`<strong>Incident:</strong> ${description} <br> <strong>Date of Incident: </strong>${date}`)
+        .addTo(map);
+    }
+  });
+
+  // When the mouse leaves the 'incidents2' layer, remove the popup and reset cursor style.
+  map.on('mouseleave', 'incidents2', () => {
+    map.getCanvas().style.cursor = ''; // Reset cursor style
+    // Remove the popup
+    const popups = document.getElementsByClassName('mapboxgl-popup');
+    if (popups.length) {
+      popups[0].remove();
+    }
+  });
+
     }
   }
-
   function updateVisibility(layer) {
     map.setLayoutProperty('incidents', 'visibility', 'none');
     map.setLayoutProperty('heatIncidents', 'visibility', 'none');
